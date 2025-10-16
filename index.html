@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Presupuesto Mensual</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js"></script>
+
+</head>
+<body>
+  <header class="bg-mes text-white text-center py-5">
+
+    <div class="container">
+      <h1>Presupuesto de <h1 id="fechaActual"></h1></h1>
+      <div class="totales d-flex flex-wrap justify-content-center gap-3">
+        <h2 id="saldoTotal">Saldo: + $0.00</h2>
+        <h2 id="ingresosTotales">Ingresos: + $0.00</h2>
+        <h2 id="egresosTotales">Egresos: - $0.00</h2>
+        <h2 id="porcentajeGastos">% Gastos: 0%</h2>
+      </div>
+    </div>
+  </header>
+
+  <main class="container my-5">
+    <div class="row">
+      <div class="col-md-5 mb-4">
+        <h2 class="h4 mb-3">Transacción</h2>
+        <form id="formTransaccion" class="row g-3">
+          <div class="col-12">
+            <select id="tipo" class="form-select">
+              <option value="ingreso">Ingreso</option>
+              <option value="egreso">Egreso</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <input type="text" id="descripcion" class="form-control" placeholder="Descripción" required>
+          </div>
+          <div class="col-12">
+            <input type="number" id="monto" class="form-control" placeholder="Monto" required>
+          </div>
+          <div class="col-12">
+            <button type="submit" class="bg-mes text-white text-center btn btn-success w-100">Agregar</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="col-md-7">
+        <ul class="nav nav-tabs mb-3" id="tabs">
+          <li class="nav-item">
+            <a class="nav-link active" href="#"><img src="ingresos.png" width="25" height="25"> Ingresos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><img src="gastos.jpg" width="25" height="25"> Egresos</a>
+          </li>
+        </ul>
+        <div id="listaTransacciones"></div>
+      </div>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
