@@ -70,29 +70,48 @@ function actualizarUI() {
   document.getElementById('porcentajeGastos').textContent = `% Gastos: ${porcentajeGastos.toFixed(1)}%`;
 }
 
-//manejar el submit del formulario
-document.getElementById('formTransaccion').addEventListener('submit', function(e) {
+document.getElementById('formTransaccion').addEventListener('submit', function (e) {
   e.preventDefault();
 
-  const tipo = document.getElementById('tipo').value;
-  const descripcion = document.getElementById('descripcion').value;
-  const monto = parseFloat(document.getElementById('monto').value);
+  const tipo = document.getElementById('tipo').value.trim();
+  const descripcion = document.getElementById('descripcion').value.trim();
+  const montoTexto = document.getElementById('monto').value.trim();
+
+  // Validar que el monto sea número válido
+  if (montoTexto === "" || isNaN(montoTexto) || parseFloat(montoTexto) <= 0) {
+    alert("Por favor ingresa un monto válido mayor a 0.");
+    return;
+  }
+
+  const monto = parseFloat(montoTexto);
 
   // Crear nueva transacción
   const nuevaTransaccion = {
     tipo,
     descripcion,
     monto,
-    id: Date.now() // ID único
+    id: Date.now(),
   };
 
-  // Agregar al array
+  // Agregar al array global
   transacciones.push(nuevaTransaccion);
 
-  // Actualizar UI y limpiar formulario
+  // Actualizar totales
   actualizarUI();
+
+  // Mostrar lista según el tab activo actual
+  const tabActivo = document.querySelector(".nav-link.active");
+  if (tabActivo && tabActivo.textContent.toLowerCase().includes("egreso")) {
+    mostrarTransacciones("egreso");
+  } else {
+    mostrarTransacciones("ingreso");
+  }
+
+  // Limpiar formulario
   this.reset();
 });
+
+
 
 //funcionalidad de los tab
 document.querySelectorAll('.nav-link').forEach(tab => {
@@ -118,16 +137,41 @@ document.querySelectorAll('.nav-link').forEach(tab => {
 function mostrarTransacciones(tipo) {
   const lista = document.getElementById('listaTransacciones');
   const transaccionesFiltradas = transacciones.filter(t => t.tipo === tipo);
-  
-  lista.innerHTML = transaccionesFiltradas.map(transaccion => `
-    <div class="transaccion-item ${tipo}-row p-3 mb-2 rounded">
-      <div class="d-flex justify-content-between align-items-center">
-        <span>${transaccion.descripcion}</span>
-        <span>$${transaccion.monto.toFixed(2)}</span>
-      </div>
-    </div>
-  `).join('');
+  const { totalIngresos } = calcularSaldo();
+
+  lista.innerHTML = transaccionesFiltradas.map(transaccion => {
+    if (tipo === 'egreso') {
+      const porcentajeEgreso = totalIngresos > 0 
+        ? (transaccion.monto * 100) / totalIngresos 
+        : 0;
+
+      return `
+        <div class="transaccion-item ${tipo}-row p-3 mb-2 rounded">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <span>${transaccion.descripcion}</span>
+            </div>
+            <div class="text-end">
+              <span>-$${transaccion.monto.toFixed(2)}</span>
+              <span class="badge bg-secondary ms-2">${porcentajeEgreso.toFixed(1)}%</span>
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      // Mostrar ingresos normales
+      return `
+        <div class="transaccion-item ${tipo}-row p-3 mb-2 rounded">
+          <div class="d-flex justify-content-between align-items-center">
+            <span>${transaccion.descripcion}</span>
+            <span>+$${transaccion.monto.toFixed(2)}</span>
+          </div>
+        </div>
+      `;
+    }
+  }).join('');
 }
+
 
   //Actualizar UI inicial
   actualizarUI();
